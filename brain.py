@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 # Load the model
-model = tf.keras.models.load_model('brain.keras')
+model = tf.keras.models.load_model('cnn_model.h5')
 
 # Define class labels
 class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
