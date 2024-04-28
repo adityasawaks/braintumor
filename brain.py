@@ -14,10 +14,16 @@ def load_model_and_labels(model_path):
   return model, class_labels
 
 
-def preprocess_image(img, target_size=(224, 224), normalize=True):
+
+def preprocess_image(img, target_size=(255, 255), normalize=True):
   """Preprocesses the MRI image for the model."""
-  # Convert PIL image to NumPy array (using tensorflow if available)
-  img_array = tf.keras.preprocessing.image.img_to_array(img, use_pillow=False)
+  # Convert PIL image to NumPy array
+  img_array = np.array(img)
+
+  img_array = img_array.astype('float32')  # Convert to float32 for normalization
+
+  # Resize the image
+  img_array = tf.image.resize(img_array, target_size)
 
   # Normalize pixel values (adjust based on model requirements)
   if normalize:
@@ -26,9 +32,8 @@ def preprocess_image(img, target_size=(224, 224), normalize=True):
   # Additional preprocessing steps specific to MRI analysis (e.g., skull stripping)
   # may be required depending on the model
 
-  img_array = tf.expand_dims(img_array, axis=0)  # Add batch dimension
+  img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
   return img_array
-
 def predict_mri(model, img_array, class_labels):
   """Makes predictions on the preprocessed MRI image."""
   predictions = model.predict(img_array)
