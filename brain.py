@@ -16,23 +16,25 @@ if uploaded_file is not None:
     img = image.resize((255, 255))
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
-    print(img_array)
 
     # Load the pre-trained model
     st.write("Loading pre-trained model...")
-    model = tf.keras.models.load_model("cnn_model.h5")
-    st.write("Model loaded successfully.")
-
-    # Define the class labels
-    class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
-
-    # Preprocess the image
-    st.write("Preprocessing the image...")
     try:
-        # Make predictions
-        predictions = model.predict(img_array)
-        st.write("Predictions:")
-        for i, prob in enumerate(predictions[0]):
-            st.write(f"Probability of {class_labels[i]}: {prob}")
-    except Exception as e:
-        st.write(f"An error occurred: {e}")
+        model = tf.keras.models.load_model("cnn_model.h5")
+        st.write("Model loaded successfully.")
+
+        # Define the class labels
+        class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
+
+        # Preprocess the image
+        st.write("Preprocessing the image...")
+        try:
+            # Make predictions
+            predictions = model.predict(img_array)
+            st.write("Predictions:")
+            for i, prob in enumerate(predictions[0]):
+                st.write(f"Probability of {class_labels[i]}: {prob}")
+        except Exception as e:
+            st.write(f"An error occurred during prediction: {e}")
+    except BrokenPipeError:
+        pass  # Ignore BrokenPipeError
