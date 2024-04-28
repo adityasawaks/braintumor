@@ -1,9 +1,10 @@
 
-Pillow
 streamlit
-Keras
-tensorflow
-tf_keras==2.16.0
-numpy
-Keras
 
+
+numpy
+
+PIL 
+TensorFlow: 2.15.0
+Keras: 3.2.1
+Pillow: 9.5.0
