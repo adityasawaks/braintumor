@@ -1,6 +1,7 @@
 import streamlit as st
 import tensorflow as tf
 from PIL import Image
+import time
 
 # Load your pre-trained model
 print("Loading pre-trained model...")
@@ -38,4 +39,5 @@ if uploaded_file is not None:
 
     except Exception as e:
         st.write(f"An error occurred: {e}")
+        time.sleep(5)  # Adding a delay to keep the app alive for 5 seconds
 
