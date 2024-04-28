@@ -13,11 +13,11 @@ def load_model_and_labels(model_path):
 
   return model, class_labels
 
+
 def preprocess_image(img, target_size=(224, 224), normalize=True):
   """Preprocesses the MRI image for the model."""
-  img = Image.open(img)
-  img = img.resize(target_size)
-  img_array = tf.keras.preprocessing.image.img_to_array(img)
+  # Convert PIL image to NumPy array (using tensorflow if available)
+  img_array = tf.keras.preprocessing.image.img_to_array(img, use_pillow=False)
 
   # Normalize pixel values (adjust based on model requirements)
   if normalize:
