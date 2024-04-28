@@ -16,24 +16,27 @@ class_labels = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']
 def main():
     st.title("Brain Tumor MRI Image Classification")
 
-    # Image path
-    image_path = '/kaggle/input/brain-tumor-mri-dataset/Testing/pituitary/Te-piTr_0004.jpg'
-    image = Image.open(image_path)
+    # File uploader for image
+    uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-    # Display the image
-    st.image(image, caption='Test Image', use_column_width=True)
-    
-    # Preprocess the image
-    image = image.resize((255, 255))
-    image = np.array(image) / 255.0
-    img_array = np.expand_dims(image, axis=0)
+    if uploaded_image is not None:
+        # Open the uploaded image
+        image = Image.open(uploaded_image)
+        
+        # Display the uploaded image
+        st.image(image, caption='Uploaded Image', use_column_width=True)
+        
+        # Preprocess the image
+        image = image.resize((255, 255))
+        image = np.array(image) / 255.0
+        img_array = np.expand_dims(image, axis=0)
 
-    # Make predictions
-    predictions = model.predict(img_array)
-    predicted_class_index = np.argmax(predictions)
-    predicted_label = class_labels[predicted_class_index]
+        # Make predictions
+        predictions = model.predict(img_array)
+        predicted_class_index = np.argmax(predictions)
+        predicted_label = class_labels[predicted_class_index]
 
-    st.write("Prediction:", predicted_label)
+        st.write("Prediction:", predicted_label)
 
 if __name__ == '__main__':
     main()
