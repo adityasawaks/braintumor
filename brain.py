@@ -4,17 +4,16 @@ from PIL import Image
 
 st.title("Brain Tumor MRI Classification")
 
-# Load the pre-trained model
-@st.cache(allow_output_mutation=True)
-def load_model():
-    model = tf.keras.models.load_model("cnn_model.h5")
-    return model
-
 # Define the class labels
 class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
 
-# Load the model
-model = load_model()
+# Function to load the model
+def load_model():
+    try:
+        model = tf.keras.models.load_model("cnn_model.h5")
+    except OSError:
+        st.error("Error: Unable to load the model.")
+        return None
 
 # Function to preprocess the image
 def preprocess_image(image):
@@ -31,15 +30,18 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption='Uploaded MRI Image', use_column_width=True)
 
-    # Preprocess the image
-    img_array = preprocess_image(image)
+    # Load the model
+    model = load_model()
 
-    # Make predictions
-    predictions = model.predict(img_array)
-    
-    # Display the predictions
-    st.write("Predictions:")
-    predicted_label_index = tf.argmax(predictions[0])
-    predicted_label = class_labels[predicted_label_index]
-    st.write(f"Predicted class: {predicted_label}")
+    if model is not None:
+        # Preprocess the image
+        img_array = preprocess_image(image)
 
+        # Make predictions
+        predictions = model.predict(img_array)
+        
+        # Display the predictions
+        st.write("Predictions:")
+        predicted_label_index = tf.argmax(predictions[0])
+        predicted_label = class_labels[predicted_label_index]
+        st.write(f"Predicted class: {predicted_label}")
