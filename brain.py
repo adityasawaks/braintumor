@@ -5,12 +5,8 @@ from tensorflow.keras.models import load_model
 
 st.title('Brain MRI Tumor Classifier')
 st.write('Upload an MRI image of a brain tumor to classify the tumor type.')
+model = load_model('cnn_model.h5', compile=False)
 
-try:
-    model = load_model('cnn_model.h5', compile=False)
-except Exception as e:
-    st.error(f"Error loading the model: {e}")
-    st.stop()
 
 class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
