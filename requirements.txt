@@ -1,6 +1,7 @@
-numpy
+
 Pillow
 streamlit
 Keras
 tensorflow
-tf_keras
+tf_keras==2.16.0
+
