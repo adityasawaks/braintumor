@@ -4,4 +4,6 @@ streamlit
 Keras
 tensorflow
 tf_keras==2.16.0
+numpy
+Keras
 
