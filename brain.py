@@ -1,42 +1,39 @@
 import streamlit as st
 from PIL import Image
-import tensorflow as tf
-from tensorflow.keras.models import load_model as load_keras_model
+from keras.preprocessing.image import load_img, img_to_array
+import numpy as np
+from keras.models import load_model
 
-# Load the Keras model
-@st.cache(allow_output_mutation=True)
-def load_custom_model():
-    return load_keras_model('cnn_model.h5')
+def preprocess_mri(image_path):
+    img = load_img(image_path, target_size=(255, 255))
+    img_array = img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array /= 255.0  # Normalize pixel values
+    return img_array
 
-# Define class labels
-class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
-
-# Main function to make predictions
-def predict(model, image):
-    img = image.resize((255, 255))
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
-    img_array = tf.expand_dims(img_array, 0)
-    predictions = model.predict(img_array)
+def predict_mri(model, image):
+    predictions = model.predict(image)
     return predictions
 
-# Streamlit app
-def main():
-    st.title('Brain Tumor Classifier')
+def run():
+    st.title('Brain MRI Tumor Classifier')
     st.write('Upload an MRI image of a brain tumor to classify the tumor type.')
 
-    uploaded_file = st.file_uploader("Choose an image...", type="jpg")
+    model = load_model('cnn_model.h5', compile=False)
+    class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
+
+    uploaded_file = st.file_uploader("Choose an MRI image...", type=["jpg", "png"])
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
         st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        model = load_custom_model()
-        predictions = predict(model, image)
-
-        st.write('### Predictions:')
-        for i, prob in enumerate(predictions[0]):
-            st.write(f"Probability of {class_labels[i]}: {prob}")
+        if st.button("Predict"):
+            processed_image = preprocess_mri(uploaded_file)
+            predictions = predict_mri(model, processed_image)
+            st.write('### Predictions:')
+            for i, prob in enumerate(predictions[0]):
+                st.write(f"Probability of {class_labels[i]}: {prob}")
 
 if __name__ == '__main__':
-    main()
-
+    run()
