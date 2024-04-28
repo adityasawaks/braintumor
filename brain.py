@@ -24,7 +24,9 @@ if uploaded_image is not None:
     # Open and preprocess the image
     image = Image.open(uploaded_image)
     img = image.resize((255, 255))
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    
+    # Normalize the image
+    img_array = tf.keras.preprocessing.image.img_to_array(img) / 255.0
     img_array = tf.expand_dims(img_array, 0)
     
     try:
