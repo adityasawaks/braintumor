@@ -1,37 +1,42 @@
 import streamlit as st
-import tensorflow as tf
 from PIL import Image
+from keras.preprocessing.image import load_img,img_to_array
+import numpy as np
+from keras.models import load_model
 
-st.title("Brain Tumor MRI Classification")
+model = load_model('cnn_model.h5',compile=False)
+lab = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
-# Define the class labels
-class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
+def processed_img(img_path):
+    img=load_img(img_path,target_size=(255,255,3))
+    img=img_to_array(img)
+    img=img/255
+    img=np.expand_dims(img,[0])
+    answer=model.predict(img)
+    y_class = answer.argmax(axis=-1)
+    print(y_class)
+    y = " ".join(str(x) for x in y_class)
+    y = int(y)
+    res = lab[y]
+    print(res)
+    return res
 
-# File uploader
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
+def run():
+    img1 = Image.open('./meta/logo1.png')
+    img1 = img1.resize((350,350))
+    st.image(img1,use_column_width=False)
+    st.title("Birds Species Classification")
+    st.markdown('''<h4 style='text-align: left; color: #d73b5c;'>* Data is based "270 Bird Species also see 70 Sports Dataset"</h4>''',
+                unsafe_allow_html=True)
 
-if uploaded_file is not None:
-    # Display the uploaded image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded MRI Image', use_column_width=True)
+    img_file = st.file_uploader("Choose an Image of Bird", type=["jpg", "png"])
+    if img_file is not None:
+        st.image(img_file,use_column_width=False)
+        save_image_path = './upload_images/'+img_file.name
+        with open(save_image_path, "wb") as f:
+            f.write(img_file.getbuffer())
 
-    # Load the model
-    try:
-        model = tf.keras.models.load_model("cnn_model.h5")
-    except OSError:
-        st.error("Error: Unable to load the model.")
-    else:
-        # Preprocess the image
-        img = image.resize((255, 255))
-        img_array = tf.keras.preprocessing.image.img_to_array(img)
-        img_array = tf.expand_dims(img_array, 0)
-
-        # Make predictions
-        try:
-            predictions = model.predict(img_array)
-            predicted_label_index = tf.argmax(predictions[0])
-            predicted_label = class_labels[predicted_label_index]
-            st.write(f"Predicted class: {predicted_label}")
-        except Exception as e:
-            st.error(f"Error occurred during prediction: {e}")
-            print(e)
+        if st.button("Predict"):
+            result = processed_img(save_image_path)
+            st.success("Predicted Bird is: "+result)
+run()
