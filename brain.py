@@ -1,59 +1,45 @@
 import streamlit as st
 import tensorflow as tf
 from PIL import Image
-import numpy as np
-import time
 
-MAX_RETRIES = 3
+st.title("Brain Tumor MRI Classification")
 
-def load_model(model_path):
-    try:
-        model = tf.keras.models.load_model(model_path)
-        return model
-    except OSError:
-        st.error("Error: Unable to load the model.")
-        return None
+# Load the pre-trained model
+@st.cache(allow_output_mutation=True)
+def load_model():
+    model = tf.keras.models.load_model("cnn_model.h5")
+    return model
 
+# Define the class labels
+class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
+
+# Load the model
+model = load_model()
+
+# Function to preprocess the image
 def preprocess_image(image):
     img = image.resize((255, 255))
     img_array = tf.keras.preprocessing.image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
+    img_array = tf.expand_dims(img_array, 0)
     return img_array
 
-def predict_class(model, img_array, class_labels):
-    retries = 0
-    while retries < MAX_RETRIES:
-        try:
-            predictions = model.predict(img_array)
-            predicted_label_index = np.argmax(predictions[0])
-            predicted_label = class_labels[predicted_label_index]
-            st.write("Predicted class:", predicted_label)
-            break
-        except Exception as e:
-            retries += 1
-            if retries == MAX_RETRIES:
-                st.error(f"Maximum retries exceeded. Error: {e}")
-            else:
-                st.warning(f"An error occurred during prediction: {e}. Retrying...")
-                time.sleep(1)
+# File uploader
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
 
-def main():
-    st.title("Brain Tumor MRI Classification")
+if uploaded_file is not None:
+    # Display the uploaded image
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Uploaded MRI Image', use_column_width=True)
 
-    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
+    # Preprocess the image
+    img_array = preprocess_image(image)
 
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        st.image(image, caption='Uploaded MRI Image', use_column_width=True)
-        st.write("Image uploaded successfully.")
+    # Make predictions
+    predictions = model.predict(img_array)
+    
+    # Display the predictions
+    st.write("Predictions:")
+    predicted_label_index = tf.argmax(predictions[0])
+    predicted_label = class_labels[predicted_label_index]
+    st.write(f"Predicted class: {predicted_label}")
 
-        model_path = "cnn_model.h5"
-        model = load_model(model_path)
-
-        if model is not None:
-            class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
-            img_array = preprocess_image(image)
-            predict_class(model, img_array, class_labels)
-
-if __name__ == "__main__":
-    main()
