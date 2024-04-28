@@ -1,49 +1,37 @@
 import streamlit as st
 from PIL import Image
-from tensorflow.keras.preprocessing.image import img_to_array
+import tensorflow as tf
 from tensorflow.keras.models import load_model
 
-def preprocess_mri(image):
-    img = image.resize((255, 255))  # Resize the image
-    img_array = img_to_array(img) / 255.0  # Convert to array and normalize
-    return img_array
+st.title('Brain MRI Tumor Classifier')
+st.write('Upload an MRI image of a brain tumor to classify the tumor type.')
 
-def predict_mri(model, image):
-    st.write('Processed Image Shape:', image.shape)
-    st.write('Model Input Shape:', model.input_shape)
-    try:
-        predictions = model.predict(image)
-        return predictions
-    except Exception as e:
-        st.error(f"Prediction error: {e}")
-        return None
+try:
+    model = load_model('cnn_model.h5', compile=False)
+except Exception as e:
+    st.error(f"Error loading the model: {e}")
+    st.stop()
 
-def run():
-    st.title('Brain MRI Tumor Classifier')
-    st.write('Upload an MRI image of a brain tumor to classify the tumor type.')
+class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
-    try:
-        model = load_model('cnn_model.h5', compile=False)
-    except Exception as e:
-        st.error(f"Error loading the model: {e}")
-        return
+uploaded_file = st.file_uploader("Choose an MRI image...", type=["jpg", "png"])
 
-    class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
+if uploaded_file is not None:
+    image = Image.open(uploaded_file)
+    st.image(image, caption='Uploaded Image', use_column_width=True)
 
-    uploaded_file = st.file_uploader("Choose an MRI image...", type=["jpg", "png"])
+    if st.button("Predict"):
+        img = image.resize((255, 255))
+        img_array = tf.keras.preprocessing.image.img_to_array(img)
+        img_array = tf.expand_dims(img_array, 0)
 
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file)
-        st.image(image, caption='Uploaded Image', use_column_width=True)
+        st.write('Processed Image Shape:', img_array.shape)
+        st.write('Model Input Shape:', model.input_shape)
 
-        if st.button("Predict"):
-            processed_image = preprocess_mri(image)
-            processed_image = processed_image.reshape(1, 255, 255, 3)  # Add batch dimension
-            predictions = predict_mri(model, processed_image)
-            if predictions is not None:
-                st.write('### Predictions:')
-                for i, prob in enumerate(predictions[0]):
-                    st.write(f"Probability of {class_labels[i]}: {prob}")
-
-if __name__ == '__main__':
-    run()
+        try:
+            predictions = model.predict(img_array)
+            st.write('### Predictions:')
+            for i, prob in enumerate(predictions[0]):
+                st.write(f"Probability of {class_labels[i]}: {prob}")
+        except Exception as e:
+            st.error(f"Prediction error: {e}")
