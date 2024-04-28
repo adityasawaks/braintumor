@@ -34,12 +34,17 @@ def main():
 
         # Preprocess the image
         processed_image = preprocess_image(image)
+        # Debugging: Print processed image shape
+        st.write("Processed Image Shape:", processed_image.shape)
+        
         # Predict
         prediction = model.predict(processed_image)
+        # Debugging: Print prediction shape
+        st.write("Prediction Shape:", prediction.shape)
+        
         predicted_class = np.argmax(prediction)
         predicted_label = class_labels[predicted_class]
         st.write("Prediction:", predicted_label)
 
 if __name__ == '__main__':
     main()
-
