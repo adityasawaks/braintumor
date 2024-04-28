@@ -1,4 +1,3 @@
-
 import streamlit as st
 import tensorflow as tf
 from PIL import Image
@@ -38,6 +37,4 @@ if uploaded_file is not None:
             st.write(f"Probability of {class_labels[i]}: {prob}")
 
     except Exception as e:
-        st.error(f"An error occurred: {e}")
         print(f"An error occurred: {e}")
-
