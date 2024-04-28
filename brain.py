@@ -31,9 +31,11 @@ if uploaded_file is not None:
         try:
             # Make predictions
             predictions = model.predict(img_array)
+            class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
+            predicted_label_index = np.argmax(predictions[0])
+            predicted_label = class_labels[predicted_label_index]
             st.write("Predictions:")
-            for i, prob in enumerate(predictions[0]):
-                st.write(f"Probability of {class_labels[i]}: {prob}")
+            print("Predicted class:", predicted_label)
         except Exception as e:
             st.write(f"An error occurred during prediction: {e}")
     except BrokenPipeError:
