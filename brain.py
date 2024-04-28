@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+import time  # Import the time module
 
 def load_tumor_classifier():
   """Loads the pre-trained CNN model for tumor classification."""
@@ -27,7 +28,7 @@ def predict_tumor_type(model, img_array, timeout=10):
   """Predicts the tumor type from the processed image with timeout."""
   if model is None or img_array is None:
     return None
-  start_time = time.time()
+  start_time = time.time()  # Use the imported time module
   while True:
     try:
       predictions = model.predict(img_array)
