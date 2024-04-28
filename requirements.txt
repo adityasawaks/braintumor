@@ -1,5 +1,2 @@
-Keras==3.2.1
+
 tensorflow
-numpy
-Pillow
-streamlit
