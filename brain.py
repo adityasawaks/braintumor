@@ -1,30 +1,40 @@
 import streamlit as st
 from PIL import Image
-import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing.image import img_to_array
-from tensorflow.keras.models import load_model
 
-# Load the model
-model = load_model('cnn_model.h5')
+# Load the Keras model
+@st.cache(allow_output_mutation=True)
+def load_model():
+    return tf.keras.models.load_model('cnn_model.h5')
 
-# Define tumor types
-lab = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
+# Define class labels
+class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
-st.title("Brain Tumor Type Classification")
+# Main function to make predictions
+def predict(image):
+    model = load_model()
+    img = image.resize((255, 255))
+    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)
+    predictions = model.predict(img_array)
+    return predictions
 
-img_file = st.file_uploader("Choose an Image of Brain MRI", type=["jpg", "png"])
-if img_file is not None:
-    st.image(img_file, use_column_width=False)
+# Streamlit app
+def main():
+    st.title('Brain Tumor Classifier')
+    st.write('Upload an MRI image of a brain tumor to classify the tumor type.')
 
-    if st.button("Predict"):
-        img = Image.open(img_file)
-        img = img.resize((255, 255))  # Resize image
-        img_array = img_to_array(img)
-        img_array = img_array / 255.0  # Normalize pixel values
-        img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
-        prediction = model.predict(img_array)
-        predicted_class = np.argmax(prediction)
-        confidence = np.max(prediction)
-        tumor_type = lab[predicted_class]
-        st.success(f"Predicted Tumor Type: {tumor_type} (Confidence: {confidence:.2f})")
+    uploaded_file = st.file_uploader("Choose an image...", type="jpg")
+
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption='Uploaded Image', use_column_width=True)
+
+        predictions = predict(image)
+
+        st.write('### Predictions:')
+        for i, prob in enumerate(predictions[0]):
+            st.write(f"Probability of {class_labels[i]}: {prob}")
+
+if __name__ == '__main__':
+    main()
