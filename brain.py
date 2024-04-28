@@ -2,6 +2,9 @@ import streamlit as st
 import tensorflow as tf
 from PIL import Image
 import numpy as np
+import time
+
+MAX_RETRIES = 3
 
 def load_model(model_path):
     try:
@@ -18,13 +21,21 @@ def preprocess_image(image):
     return img_array
 
 def predict_class(model, img_array, class_labels):
-    try:
-        predictions = model.predict(img_array)
-        predicted_label_index = np.argmax(predictions[0])
-        predicted_label = class_labels[predicted_label_index]
-        st.write("Predicted class:", predicted_label)
-    except Exception as e:
-        st.error(f"An error occurred during prediction: {e}")
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            predictions = model.predict(img_array)
+            predicted_label_index = np.argmax(predictions[0])
+            predicted_label = class_labels[predicted_label_index]
+            st.write("Predicted class:", predicted_label)
+            break
+        except Exception as e:
+            retries += 1
+            if retries == MAX_RETRIES:
+                st.error(f"Maximum retries exceeded. Error: {e}")
+            else:
+                st.warning(f"An error occurred during prediction: {e}. Retrying...")
+                time.sleep(1)
 
 def main():
     st.title("Brain Tumor MRI Classification")
