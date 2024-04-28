@@ -6,15 +6,20 @@ import numpy as np
 
 def load_model_and_labels(model_path):
   """Loads the pre-trained model and class labels (assuming a built-in dictionary)."""
-  # Load the model
-  model = load_model(model_path)
+  # Create a TensorFlow session (optional, comment out if not needed)
+  # sess = tf.Session()
+
+  # Load the model (within the session if created)
+  model = load_model(model_path)  # Use sess.run(model) if using session
 
   # Define class labels directly within the function (modify if needed)
   class_labels = {'glioma': 0, 'meningioma': 1, 'notumor': 2, 'pituitary': 3}
 
+  # Close the session if created
+  # if sess:
+  #   sess.close()
+
   return model, class_labels
-
-
 
 def preprocess_image(img, target_size=(255, 255), normalize=True):
   """Preprocesses the MRI image for the model."""
@@ -35,6 +40,7 @@ def preprocess_image(img, target_size=(255, 255), normalize=True):
 
   img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
   return img_array
+
 def predict_mri(model, img_array, class_labels):
   """Makes predictions on the preprocessed MRI image."""
   predictions = model.predict(img_array)
@@ -42,6 +48,7 @@ def predict_mri(model, img_array, class_labels):
   predicted_label = class_labels[list(class_labels.keys())[predicted_class]]
   return predicted_label
 
+@st.cache(allow_output_mutation=True)  # Allow mutation for prediction
 def run():
   """Defines the Streamlit application logic."""
   st.title("MRI Brain Tumor Classification (Without Image Saving)")
@@ -73,4 +80,3 @@ def run():
 
 if __name__ == '__main__':
   run()
-
