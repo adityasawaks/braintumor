@@ -1,17 +1,16 @@
 import streamlit as st
 from PIL import Image
 from tensorflow.keras.preprocessing.image import img_to_array
-import numpy as np
 from tensorflow.keras.models import load_model
 
 def preprocess_mri(image):
     img = image.resize((255, 255))  # Resize the image
-    img_array = img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    img_array /= 255.0  # Normalize pixel values
+    img_array = img_to_array(img) / 255.0  # Convert to array and normalize
     return img_array
 
 def predict_mri(model, image):
+    st.write('Processed Image Shape:', image.shape)
+    st.write('Model Input Shape:', model.input_shape)
     predictions = model.predict(image)
     return predictions
 
@@ -30,6 +29,7 @@ def run():
 
         if st.button("Predict"):
             processed_image = preprocess_mri(image)
+            processed_image = processed_image.reshape(1, 255, 255, 3)  # Add batch dimension
             predictions = predict_mri(model, processed_image)
             st.write('### Predictions:')
             for i, prob in enumerate(predictions[0]):
