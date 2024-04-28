@@ -11,14 +11,23 @@ def preprocess_mri(image):
 def predict_mri(model, image):
     st.write('Processed Image Shape:', image.shape)
     st.write('Model Input Shape:', model.input_shape)
-    predictions = model.predict(image)
-    return predictions
+    try:
+        predictions = model.predict(image)
+        return predictions
+    except Exception as e:
+        st.error(f"Prediction error: {e}")
+        return None
 
 def run():
     st.title('Brain MRI Tumor Classifier')
     st.write('Upload an MRI image of a brain tumor to classify the tumor type.')
 
-    model = load_model('cnn_model.h5', compile=False)
+    try:
+        model = load_model('cnn_model.h5', compile=False)
+    except Exception as e:
+        st.error(f"Error loading the model: {e}")
+        return
+
     class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
     uploaded_file = st.file_uploader("Choose an MRI image...", type=["jpg", "png"])
@@ -31,10 +40,10 @@ def run():
             processed_image = preprocess_mri(image)
             processed_image = processed_image.reshape(1, 255, 255, 3)  # Add batch dimension
             predictions = predict_mri(model, processed_image)
-            st.write('### Predictions:')
-            for i, prob in enumerate(predictions[0]):
-                st.write(f"Probability of {class_labels[i]}: {prob}")
+            if predictions is not None:
+                st.write('### Predictions:')
+                for i, prob in enumerate(predictions[0]):
+                    st.write(f"Probability of {class_labels[i]}: {prob}")
 
 if __name__ == '__main__':
     run()
-
