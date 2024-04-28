@@ -1,11 +1,11 @@
 import streamlit as st
 from PIL import Image
 import tensorflow as tf
+from tensorflow.keras.models import load_model
 
 # Load the Keras model
-@st.cache(allow_output_mutation=True)
-def load_model():
-    return tf.keras.models.load_model('cnn_model.h5')
+# @st.cache(allow_output_mutation=True)
+# def load_model():
 
 # Define class labels
 class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
@@ -16,6 +16,7 @@ def predict(image):
     img = image.resize((255, 255))
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0)
+    tf.keras.models.load_model('cnn_model.h5')
     predictions = model.predict(img_array)
     return predictions
 
