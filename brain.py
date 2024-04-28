@@ -4,19 +4,18 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 
 # Load the Keras model
-# @st.cache(allow_output_mutation=True)
-# def load_model():
+@st.cache(allow_output_mutation=True)
+def load_model():
+    return load_model('cnn_model.h5')
 
 # Define class labels
 class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
 # Main function to make predictions
-def predict(image):
-    model = load_model()
+def predict(model, image):
     img = image.resize((255, 255))
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0)
-    tf.keras.models.load_model('cnn_model.h5')
     predictions = model.predict(img_array)
     return predictions
 
@@ -31,7 +30,8 @@ def main():
         image = Image.open(uploaded_file)
         st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        predictions = predict(image)
+        model = load_model()
+        predictions = predict(model, image)
 
         st.write('### Predictions:')
         for i, prob in enumerate(predictions[0]):
@@ -39,3 +39,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
