@@ -2,13 +2,12 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.optimizers import Adam
 
 # Load the model without compiling
 model = tf.keras.models.load_model('cnn_model.h5', compile=False)
 
 # Compile the model with specified optimizer, loss, and metrics
-model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Define class labels
 class_labels = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']
