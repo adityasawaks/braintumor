@@ -2,7 +2,8 @@ import streamlit as st
 from PIL import Image
 from keras.preprocessing.image import img_to_array
 import numpy as np
-from keras.models import load_model
+
+model = tf.keras.models.load_model('path_to_your_trained_model')
 
 model = load_model('cnn_model.h5', compile=False)
 lab = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
