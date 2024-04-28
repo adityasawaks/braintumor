@@ -6,7 +6,7 @@ from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.models import load_model
 
 # Load the model
-model = load_model('brain.keras')
+model = load_model('cnn_model.h5')
 
 # Define tumor types
 lab = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
