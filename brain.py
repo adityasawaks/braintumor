@@ -8,7 +8,7 @@ def load_model_and_labels(model_path):
   # Load the model
   model = load_model(model_path)
 
-  # Define class labels directly within the function
+  # Define class labels directly within the function (modify if needed)
   class_labels = {'glioma': 0, 'meningioma': 1, 'notumor': 2, 'pituitary': 3}
 
   return model, class_labels
@@ -40,8 +40,8 @@ def run():
   """Defines the Streamlit application logic."""
   st.title("MRI Brain Tumor Classification")
 
-  # Model path input (modify as needed)
-  model_path = st.text_input("cnn_model.h5")
+  # Set the model path (modify if needed)
+  model_path = "cnn_model.h5"  # Assuming the model is in the same directory
 
   # Load the model and labels (built-in dictionary)
   try:
@@ -69,3 +69,4 @@ def run():
 
 if __name__ == '__main__':
   run()
+
