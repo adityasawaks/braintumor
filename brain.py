@@ -1,11 +1,14 @@
 import streamlit as st
 from PIL import Image
-from keras.preprocessing.image import img_to_array
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import img_to_array
+from tensorflow.keras.models import load_model
 
-model = tf.keras.models.load_model('path_to_your_trained_model')
+# Load the model
+model = load_model('cnn_model.h5')
 
-model = load_model('cnn_model.h5', compile=False)
+# Define tumor types
 lab = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
 st.title("Brain Tumor Type Classification")
@@ -22,5 +25,6 @@ if img_file is not None:
         img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
         prediction = model.predict(img_array)
         predicted_class = np.argmax(prediction)
+        confidence = np.max(prediction)
         tumor_type = lab[predicted_class]
-        st.success("Predicted Tumor Type: " + tumor_type)
+        st.success(f"Predicted Tumor Type: {tumor_type} (Confidence: {confidence:.2f})")
