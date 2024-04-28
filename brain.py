@@ -37,4 +37,5 @@ if uploaded_file is not None:
             st.write(f"Probability of {class_labels[i]}: {prob}")
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        st.write(f"An error occurred: {e}")
+
