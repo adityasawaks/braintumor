@@ -1,10 +1,10 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-from keras.models import load_model
+import tensorflow as tf
 
 # Load the model
-model = load_model('brain.keras')
+model = tf.keras.models.load_model('brain.keras')
 
 # Define class labels
 class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
