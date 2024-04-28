@@ -1,3 +1,4 @@
+
 import streamlit as st
 import tensorflow as tf
 from PIL import Image
@@ -21,11 +22,15 @@ if uploaded_file is not None:
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0)
 
-    # Make predictions
-    predictions = model.predict(img_array)
+    try:
+        # Make predictions
+        predictions = model.predict(img_array)
 
-    st.write("Predictions:")
-    for i, prob in enumerate(predictions[0]):
-        st.write(f"Probability of {class_labels[i]}: {prob}")
+        st.write("Predictions:")
+        for i, prob in enumerate(predictions[0]):
+            st.write(f"Probability of {class_labels[i]}: {prob}")
+
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 
