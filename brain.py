@@ -1,11 +1,11 @@
 import streamlit as st
 from PIL import Image
-from keras.preprocessing.image import load_img, img_to_array
+from tensorflow.keras.preprocessing.image import img_to_array
 import numpy as np
 from tensorflow.keras.models import load_model
 
-def preprocess_mri(image_path):
-    img = load_img(image_path, target_size=(255, 255))
+def preprocess_mri(image):
+    img = image.resize((255, 255))  # Resize the image
     img_array = img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array /= 255.0  # Normalize pixel values
@@ -29,7 +29,7 @@ def run():
         st.image(image, caption='Uploaded Image', use_column_width=True)
 
         if st.button("Predict"):
-            processed_image = preprocess_mri(uploaded_file)
+            processed_image = preprocess_mri(image)
             predictions = predict_mri(model, processed_image)
             st.write('### Predictions:')
             for i, prob in enumerate(predictions[0]):
@@ -37,3 +37,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+
