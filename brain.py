@@ -3,8 +3,12 @@ from PIL import Image
 import numpy as np
 import tensorflow as tf
 
-# Load the model without compiling
-model = tf.keras.models.load_model('cnn_model.h5', compile=False)
+# Load the model
+try:
+    model = tf.keras.models.load_model('cnn_model.h5', compile=False)
+    st.write("Model loaded successfully!")
+except Exception as e:
+    st.error(f"An error occurred while loading the model: {str(e)}")
 
 # Compile the model with specified optimizer, loss, and metrics
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
