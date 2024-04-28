@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+import numpy as np
 
 def load_model_and_labels(model_path):
   """Loads the pre-trained model and class labels (assuming a built-in dictionary)."""
