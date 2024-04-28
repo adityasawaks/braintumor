@@ -38,7 +38,7 @@ def predict_mri(model, img_array, class_labels):
 
 def run():
   """Defines the Streamlit application logic."""
-  st.title("MRI Brain Tumor Classification")
+  st.title("MRI Brain Tumor Classification (Without Image Saving)")
 
   # Set the model path (modify if needed)
   model_path = "cnn_model.h5"  # Assuming the model is in the same directory
@@ -51,17 +51,15 @@ def run():
     st.error(f"Error loading model or labels: {e}")
     return
 
-  # Image upload and prediction
+  # Image upload and prediction (without saving)
   img_file = st.file_uploader("Choose an MRI Image", type=["jpg", "png"])
   if img_file is not None:
-    st.image(img_file, use_column_width=False)
-    save_image_path = './upload_images/' + img_file.name
-    with open(save_image_path, "wb") as f:
-      f.write(img_file.getbuffer())
+    # Load the image directly from the uploaded file object
+    img = Image.open(img_file)
 
     if st.button("Predict"):
       try:
-        img_array = preprocess_image(save_image_path)
+        img_array = preprocess_image(img)
         predicted_result = predict_mri(model, img_array, class_labels)
         st.success(f"Predicted Brain Tumor: {predicted_result}")
       except Exception as e:
