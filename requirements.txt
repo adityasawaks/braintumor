@@ -1,10 +1,3 @@
-
-streamlit
-
-
-numpy
-
-PIL 
-TensorFlow: 2.15.0
-Keras: 3.2.1
-Pillow: 9.5.0
+tensorflow==2.16.1
+keras==3.3.3
+Pillow==9.5.0
