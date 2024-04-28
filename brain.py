@@ -6,14 +6,14 @@ from tensorflow.keras.models import load_model
 def load_model_and_labels(model_path):
   """Loads the pre-trained model and class labels (assuming a built-in dictionary)."""
   # Load the model
-  model = load_model(cnn_model.h5)
+  model = load_model(model_path)
 
   # Define class labels directly within the function
   class_labels = {'glioma': 0, 'meningioma': 1, 'notumor': 2, 'pituitary': 3}
 
   return model, class_labels
 
-def preprocess_image(img, target_size=(255, 255), normalize=True):
+def preprocess_image(img, target_size=(224, 224), normalize=True):
   """Preprocesses the MRI image for the model."""
   img = Image.open(img)
   img = img.resize(target_size)
@@ -41,7 +41,7 @@ def run():
   st.title("MRI Brain Tumor Classification")
 
   # Model path input (modify as needed)
-  model_path = st.text_input("Enter the path to your pre-trained model (.h5)", "/path/to/model.h5")
+  model_path = st.text_input("cnn_model.h5")
 
   # Load the model and labels (built-in dictionary)
   try:
