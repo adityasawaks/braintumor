@@ -2,49 +2,39 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 import tensorflow as tf
+from tensorflow.keras.optimizers import Adam
 
-# Load the model
-model = tf.keras.models.load_model('cnn_model.h5')
+# Load the model without compiling
+model = tf.keras.models.load_model('cnn_model.h5', compile=False)
+
+# Compile the model with specified optimizer, loss, and metrics
+model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Define class labels
-class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
-
-# Function to preprocess the image
-def preprocess_image(image):
-    # Resize the image to match the input shape of the model
-    image = image.resize((255, 255))
-    # Convert the image to a numpy array
-    image = np.array(image)
-    # Normalize the image
-    image = image / 255.0
-    # Expand dimensions to match the input shape of the model
-    image = np.expand_dims(image, axis=0)
-    return image
+class_labels = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']
 
 # Streamlit app
 def main():
-    st.title("CNN Image Classification App")
-    uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+    st.title("Brain Tumor MRI Image Classification")
 
-    if uploaded_image is not None:
-        image = Image.open(uploaded_image)
-        st.image(image, caption='Uploaded Image', use_column_width=True)
-        st.write("")
-        st.write("Classifying...")
+    # Image path
+    image_path = '/kaggle/input/brain-tumor-mri-dataset/Testing/pituitary/Te-piTr_0004.jpg'
+    image = Image.open(image_path)
 
-        # Preprocess the image
-        processed_image = preprocess_image(image)
-        # Debugging: Print processed image shape
-        st.write("Processed Image Shape:", processed_image.shape)
-        
-        # Predict
-        prediction = model.predict(processed_image)
-        # Debugging: Print prediction shape
-        st.write("Prediction Shape:", prediction.shape)
-        
-        predicted_class = np.argmax(prediction)
-        predicted_label = class_labels[predicted_class]
-        st.write("Prediction:", predicted_label)
+    # Display the image
+    st.image(image, caption='Test Image', use_column_width=True)
+    
+    # Preprocess the image
+    image = image.resize((255, 255))
+    image = np.array(image) / 255.0
+    img_array = np.expand_dims(image, axis=0)
+
+    # Make predictions
+    predictions = model.predict(img_array)
+    predicted_class_index = np.argmax(predictions)
+    predicted_label = class_labels[predicted_class_index]
+
+    st.write("Prediction:", predicted_label)
 
 if __name__ == '__main__':
     main()
