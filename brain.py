@@ -27,11 +27,11 @@ if uploaded_file is not None:
         img_array = tf.expand_dims(img_array, 0)
 
         # Make predictions
-        print(img_array)
-        predictions = model.predict(img_array)
-        
-        # Display the predictions
-        st.write("Predictions:")
-        predicted_label_index = tf.argmax(predictions[0])
-        predicted_label = class_labels[predicted_label_index]
-        st.write(f"Predicted class: {predicted_label}")
+        try:
+            predictions = model.predict(img_array)
+            predicted_label_index = tf.argmax(predictions[0])
+            predicted_label = class_labels[predicted_label_index]
+            st.write(f"Predicted class: {predicted_label}")
+        except Exception as e:
+            st.error(f"Error occurred during prediction: {e}")
+            print(e)
