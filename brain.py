@@ -23,12 +23,21 @@ def process_image(image):
     st.error(f"Failed to process image: {e}")
     return None
 
-def predict_tumor_type(model, img_array):
-  """Predicts the tumor type from the processed image."""
+def predict_tumor_type(model, img_array, timeout=10):
+  """Predicts the tumor type from the processed image with timeout."""
   if model is None or img_array is None:
     return None
-  predictions = model.predict(img_array)
-  return predictions
+  start_time = time.time()
+  while True:
+    try:
+      predictions = model.predict(img_array)
+      return predictions
+    except BrokenPipeError:
+      if time.time() - start_time > timeout:
+        st.error("An error occurred during prediction. Prediction timed out.")
+        return None
+      else:
+        time.sleep(1)  # Wait for a short duration before retrying
 
 def display_results(class_labels, predictions):
   """Displays the predicted tumor type probabilities."""
@@ -55,7 +64,7 @@ if model is not None:
       image = Image.open(uploaded_file)
       img_array = process_image(image)
       predictions = predict_tumor_type(model, img_array)
-      
+
     if predictions is not None:
       st.image(image, caption='Uploaded Image', use_column_width=True)
       display_results(class_labels, predictions)
@@ -66,5 +75,3 @@ if model is not None:
     st.write("Please upload an image.")
 
 st.write("**Disclaimer:** This is a demonstrative application and should not be used for medical diagnosis. Always consult a qualified medical professional for any medical concerns.")
-
-
