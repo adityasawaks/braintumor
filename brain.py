@@ -30,13 +30,19 @@ def main():
         image = image.resize((255, 255))
         image = np.array(image) / 255.0
         img_array = np.expand_dims(image, axis=0)
+        
+        # Debugging: Print shape of img_array
+        st.write("Image Array Shape:", img_array.shape)
 
-        # Make predictions
-        predictions = model.predict(img_array)
-        predicted_class_index = np.argmax(predictions)
-        predicted_label = class_labels[predicted_class_index]
+        try:
+            # Make predictions
+            predictions = model.predict(img_array)
+            predicted_class_index = np.argmax(predictions)
+            predicted_label = class_labels[predicted_class_index]
 
-        st.write("Prediction:", predicted_label)
+            st.write("Prediction:", predicted_label)
+        except Exception as e:
+            st.error(f"An error occurred during prediction: {str(e)}")
 
 if __name__ == '__main__':
     main()
