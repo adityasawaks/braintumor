@@ -1,63 +1,36 @@
 import streamlit as st
-from PIL import Image
-import numpy as np
 import tensorflow as tf
+from PIL import Image
 
-# Load the model
+st.title('Brain Tumor Image Classifier')
+
 try:
     model = tf.keras.models.load_model('cnn_model.h5', compile=False)
-    st.write("Model loaded successfully!")
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+    st.write("Model loaded and compiled successfully!")
 except Exception as e:
     st.error(f"An error occurred while loading the model: {str(e)}")
 
-# Compile the model with specified optimizer, loss, and metrics
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+# Define the class labels
+class_labels = ['glioma', 'meningioma', 'notumor', 'pituitary']
 
-# Define class labels
-class_labels = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']
+# Upload image
+uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "png", "jpeg"])
 
-# Streamlit app
-def main():
-    st.title("Brain Tumor MRI Image Classification")
+if uploaded_image is not None:
+    # Display the uploaded image
+    st.image(uploaded_image, caption='Uploaded Image', use_column_width=True)
+    
+    # Open and preprocess the image
+    image = Image.open(uploaded_image)
+    img = image.resize((255, 255))
+    img_array = tf.keras.preprocessing.image.img_to_array(img)
+    img_array = tf.expand_dims(img_array, 0)
 
-    # File uploader for image
-    uploaded_image = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
-    if uploaded_image is not None:
-        # Open the uploaded image
-        image = Image.open(uploaded_image)
-        
-        # Display the uploaded image
-        st.image(image, caption='Uploaded Image', use_column_width=True)
-        
-        # Preprocess the image
-        image = image.resize((255, 255))
-        image = np.array(image) / 255.0
-        img_array = np.expand_dims(image, axis=0)
-        
-        # Debugging: Print shape of img_array
-        st.write("Image Array Shape:", img_array.shape)
-
-        try:
-            # Make predictions
-            with st.spinner('Predicting...'):
-                predictions = model.predict(img_array)
-            
-            # Get predicted class index and label
-            predicted_class_index = np.argmax(predictions)
-            predicted_label = class_labels[predicted_class_index]
-
-            # Display prediction
-            st.success(f"Prediction: {predicted_label}")
-            
-            # Display probabilities for each class
-            st.write("Probabilities:")
-            for i, prob in enumerate(predictions[0]):
-                st.write(f"{class_labels[i]}: {prob}")
-                
-        except Exception as e:
-            st.error(f"An error occurred during prediction: {str(e)}")
-
-if __name__ == '__main__':
-    main()
-
+    # Make predictions
+    predictions = model.predict(img_array)
+    
+    # Display predictions
+    st.subheader("Prediction Results:")
+    for i, prob in enumerate(predictions[0]):
+        st.write(f"Probability of {class_labels[i]}: {prob}")
