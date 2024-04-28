@@ -26,11 +26,14 @@ if uploaded_image is not None:
     img = image.resize((255, 255))
     img_array = tf.keras.preprocessing.image.img_to_array(img)
     img_array = tf.expand_dims(img_array, 0)
-
-    # Make predictions
-    predictions = model.predict(img_array)
     
-    # Display predictions
-    st.subheader("Prediction Results:")
-    for i, prob in enumerate(predictions[0]):
-        st.write(f"Probability of {class_labels[i]}: {prob}")
+    try:
+        # Make predictions
+        predictions = model.predict(img_array)
+
+        # Display predictions
+        st.subheader("Prediction Results:")
+        for i, prob in enumerate(predictions[0]):
+            st.write(f"Probability of {class_labels[i]}: {prob}")
+    except Exception as e:
+        st.error(f"An error occurred during prediction: {str(e)}")
