@@ -1,12 +1,12 @@
 import streamlit as st
 from PIL import Image
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from tensorflow.keras.models import load_model as load_keras_model
 
 # Load the Keras model
 @st.cache(allow_output_mutation=True)
-def load_model():
-    return load_model('cnn_model.h5')
+def load_custom_model():
+    return load_keras_model('cnn_model.h5')
 
 # Define class labels
 class_labels = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
@@ -30,7 +30,7 @@ def main():
         image = Image.open(uploaded_file)
         st.image(image, caption='Uploaded Image', use_column_width=True)
 
-        model = load_model()
+        model = load_custom_model()
         predictions = predict(model, image)
 
         st.write('### Predictions:')
