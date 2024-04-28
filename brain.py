@@ -40,11 +40,21 @@ def main():
 
         try:
             # Make predictions
-            predictions = model.predict(img_array)
+            with st.spinner('Predicting...'):
+                predictions = model.predict(img_array)
+            
+            # Get predicted class index and label
             predicted_class_index = np.argmax(predictions)
             predicted_label = class_labels[predicted_class_index]
 
-            st.write("Prediction:", predicted_label)
+            # Display prediction
+            st.success(f"Prediction: {predicted_label}")
+            
+            # Display probabilities for each class
+            st.write("Probabilities:")
+            for i, prob in enumerate(predictions[0]):
+                st.write(f"{class_labels[i]}: {prob}")
+                
         except Exception as e:
             st.error(f"An error occurred during prediction: {str(e)}")
 
