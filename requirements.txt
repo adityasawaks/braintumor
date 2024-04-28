@@ -1,2 +1,6 @@
 
 tensorflow
+streamlit
+tensorflow
+keras
+pillow
