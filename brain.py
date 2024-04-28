@@ -27,6 +27,7 @@ if uploaded_file is not None:
         img_array = tf.expand_dims(img_array, 0)
 
         # Make predictions
+        print(img_array)
         predictions = model.predict(img_array)
         
         # Display the predictions
